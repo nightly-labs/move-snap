@@ -1,17 +1,17 @@
 {
   "version": "0.1.0",
-  "description": "An example Snap written in TypeScript.",
-  "proposedName": "TypeScript Example",
+  "description": "Manage Aptos-based tokens and NFTs, connect Aptos apps with MetaMask",
+  "proposedName": "Aptos Wallet",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/template-snap-monorepo.git"
+    "url": "https://github.com/nightly-labs/aptos-snap"
   },
   "source": {
     "shasum": "ZN6iWd66MhS90Y1G4mCdmQ/Y4UV43d3blRMikYsYep0=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
-        "packageName": "snap",
+        "packageName": "@nightlylabs/metamask-aptos-snap",
         "registry": "https://registry.npmjs.org/"
       }
     }
