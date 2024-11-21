@@ -7,10 +7,11 @@
     "url": "https://github.com/nightly-labs/aptos-snap"
   },
   "source": {
-    "shasum": "ZN6iWd66MhS90Y1G4mCdmQ/Y4UV43d3blRMikYsYep0=",
+    "shasum": "uOSdiwcMG5/RBD3QBDM7WbtFPNSzqP4Tqm2576KCbmQ=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
+        "iconPath": "logo.svg",
         "packageName": "@nightlylabs/metamask-aptos-snap",
         "registry": "https://registry.npmjs.org/"
       }
