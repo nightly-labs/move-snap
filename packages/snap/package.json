@@ -4,7 +4,7 @@
   "description": "Manage Aptos-based tokens and NFTs, connect Aptos apps with MetaMask",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nightly-labs/aptos-snap.git"
+    "url": "https://github.com/nightly-labs/aptos-snap"
   },
   "license": "(MIT-0 OR Apache-2.0)",
   "main": "./dist/bundle.js",
