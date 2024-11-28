@@ -3,7 +3,7 @@ import {
   NetworkInfo,
 } from '@aptos-labs/wallet-standard';
 import type { OnRpcRequestHandler } from '@metamask/snaps-sdk';
-import { Address, Bold, Box, Text } from '@metamask/snaps-sdk/jsx';
+import { Bold, Box, Text } from '@metamask/snaps-sdk/jsx';
 import { getAccount } from './account';
 import { decodeAptosTransaction } from './aptos';
 
@@ -24,8 +24,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
 }) => {
   // Get the state
   const state = await getState();
-  console.log({ state });
-  console.log({ request });
   switch (request.method) {
     case 'connect': {
       const account = await getAccount();
@@ -95,7 +93,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     }
     case 'signAndSubmitTransaction': {
       const account = await getAccount();
-
       const result = await snap.request({
         method: 'snap_dialog',
         params: {
@@ -113,13 +110,13 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           ),
         },
       });
-      const signAndSubmitTransactionInput = decodeAptosTransaction(
-        (request.params as any).payload,
-      );
-      const signature = account.signTransactionWithAuthenticator(
-        signAndSubmitTransactionInput,
-      );
       if (result === true) {
+        const signAndSubmitTransactionInput = decodeAptosTransaction(
+          (request.params as any).payload,
+        );
+        const signature = account.signTransactionWithAuthenticator(
+          signAndSubmitTransactionInput,
+        );
         return signature.bcsToHex().toString();
       } else {
         throw new Error('User rejected the request.');
@@ -148,8 +145,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           ),
         },
       });
-      const signature = account.sign(signMessageParams.message);
       if (result === true) {
+        const signature = account.sign(signMessageParams.message);
         return signature.bcsToHex().toString();
       } else {
         throw new Error('User rejected the request.');

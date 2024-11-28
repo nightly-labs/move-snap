@@ -9,11 +9,11 @@ export async function getState(): Promise<SnapState> {
       encrypted: false,
     },
   });
-  console.log({ snapState });
   // Check if the state is null
   if (snapState === null) {
     // Update the state with default values
-    const result = await snap.request({
+    // Ignore the error if the state is not updated
+    await snap.request({
       method: 'snap_manageState',
       params: {
         operation: ManageStateOperation.UpdateState,
@@ -22,7 +22,6 @@ export async function getState(): Promise<SnapState> {
         newState: DEFAULT_SNAP_STATE,
       },
     });
-    console.log({ result });
     return DEFAULT_SNAP_STATE;
   }
   // @ts-ignore
@@ -30,7 +29,7 @@ export async function getState(): Promise<SnapState> {
 }
 
 export async function updateState(newState: SnapState) {
-  const result = await snap.request({
+  return await snap.request({
     method: 'snap_manageState',
     params: {
       operation: ManageStateOperation.UpdateState,
@@ -39,7 +38,6 @@ export async function updateState(newState: SnapState) {
       newState: newState,
     },
   });
-  console.log({ result });
 }
 
 export const isAptosSignAndSubmitTransactionInput = (
