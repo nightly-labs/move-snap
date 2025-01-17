@@ -1,4 +1,9 @@
-import { Network } from '@aptos-labs/ts-sdk';
+import {
+  Network,
+  TransactionPayloadEntryFunction,
+  TransactionPayloadMultiSig,
+  TransactionPayloadScript,
+} from '@aptos-labs/ts-sdk';
 import { NetworkInfo } from '@aptos-labs/wallet-standard';
 export const DEFAULT_NETWORK: NetworkInfo = {
   name: Network.MAINNET,
@@ -11,3 +16,9 @@ export interface SnapState {
 export const DEFAULT_SNAP_STATE: SnapState = {
   network: DEFAULT_NETWORK,
 };
+
+export type TxPayload =
+  | TransactionPayloadScript
+  | TransactionPayloadEntryFunction
+  | TransactionPayloadMultiSig;
+export type TxPayloadType = 'script' | 'entryFunction' | 'multiSig';

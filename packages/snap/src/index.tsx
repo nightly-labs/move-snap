@@ -7,7 +7,20 @@ import { Bold, Box, Text } from '@metamask/snaps-sdk/jsx';
 import { getAccount } from './account';
 import { decodeAptosTransaction } from './aptos';
 
-import { getState, updateState } from './utils';
+import {
+  getState,
+  payloadToType,
+  sanitizeString as s,
+  updateState,
+  validateUrl,
+} from './utils';
+import {
+  TransactionPayload,
+  TransactionPayloadEntryFunction,
+  TransactionPayloadMultiSig,
+  TransactionPayloadScript,
+} from '@aptos-labs/ts-sdk';
+import { TxPayload } from './types';
 /**
  * Handle incoming JSON-RPC requests, sent through `wallet_invokeSnap`.
  *
@@ -58,6 +71,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     }
     case 'changeNetwork': {
       const newNetworkInfo = request.params as unknown as NetworkInfo;
+      // Validate the URL
+      validateUrl(newNetworkInfo.url);
       const changeNetworkResponse = await snap.request({
         method: 'snap_dialog',
         params: {
@@ -68,14 +83,14 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
                 <Bold>{origin}</Bold> wants to change the network to
               </Text>
               <Text>
-                Name: <Bold>{newNetworkInfo.name}</Bold>
+                Name: <Bold>{s(newNetworkInfo.name)}</Bold>
               </Text>
               <Text>
-                Id: <Bold>{newNetworkInfo.chainId.toString()}</Bold>
+                Id: <Bold>{s(newNetworkInfo.chainId.toString())}</Bold>
               </Text>
               {newNetworkInfo.url ? (
                 <Text>
-                  Url: <Bold>{newNetworkInfo.url}</Bold>
+                  Url: <Bold>{s(newNetworkInfo.url)}</Bold>
                 </Text>
               ) : null}
               <Text>Confirm to change the network.</Text>
@@ -93,6 +108,12 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     }
     case 'signAndSubmitTransaction': {
       const account = await getAccount();
+      const signAndSubmitTransactionInput = decodeAptosTransaction(
+        (request.params as any).payload,
+      );
+      // We can try to show
+      const module = signAndSubmitTransactionInput.rawTransaction
+        .payload as TxPayload;
       const result = await snap.request({
         method: 'snap_dialog',
         params: {
@@ -105,15 +126,13 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
               <Text>
                 using <Bold>{account.accountAddress.toString()}</Bold> account
               </Text>
+              {payloadToUserContent(module)}
               <Text>Confirm to sign this transaction.</Text>
             </Box>
           ),
         },
       });
       if (result === true) {
-        const signAndSubmitTransactionInput = decodeAptosTransaction(
-          (request.params as any).payload,
-        );
         const signature = account.signTransactionWithAuthenticator(
           signAndSubmitTransactionInput,
         );
@@ -135,7 +154,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
                 <Bold>{origin}</Bold> wants to sign a message:
               </Text>
               <Text>
-                <Bold>{signMessageParams.message}</Bold>
+                <Bold>{s(signMessageParams.message)}</Bold>
               </Text>
               <Text>
                 using <Bold>{account.accountAddress.toString()}</Bold> account
@@ -154,5 +173,47 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     }
     default:
       throw new Error('Method not found.');
+  }
+};
+
+export const payloadToUserContent = (payload: TransactionPayload) => {
+  const payloadType = payloadToType(payload);
+  switch (payloadType) {
+    case 'script':
+      const script = payload as TransactionPayloadScript;
+      // Hard to show details
+      return (
+        <Text>
+          Transaction type: <Bold>Script</Bold>
+        </Text>
+      );
+    case 'entryFunction':
+      const entryFunction = payload as TransactionPayloadEntryFunction;
+      return (
+        <Box>
+          <Text>
+            Transaction type: <Bold>Entry Function</Bold>
+          </Text>
+          <Text>
+            Function name:{' '}
+            <Bold>{entryFunction.entryFunction.function_name.identifier}</Bold>
+          </Text>
+          <Text>
+            Module:{' '}
+            <Bold>
+              {entryFunction.entryFunction.module_name.address.toString()}::
+              {entryFunction.entryFunction.module_name.name.identifier}
+            </Bold>
+          </Text>
+        </Box>
+      );
+    case 'multiSig':
+      const multiSig = payload as TransactionPayloadMultiSig;
+      // Hard to show details
+      return (
+        <Text>
+          Transaction type: <Bold>Multi signature</Bold>
+        </Text>
+      );
   }
 };
