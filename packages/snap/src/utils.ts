@@ -58,7 +58,10 @@ export const validateUrl = (url: string | undefined) => {
   }
 };
 export const sanitizeString = (data: string): string => {
-  return data.replace(/[\n\r]/g, ' ');
+  return data
+    .replace(/[\r\n]/gu, '')
+    .replace(/\s+/gu, ' ')
+    .trim();
 };
 
 export const payloadToType = (payload: TransactionPayload): TxPayloadType => {
