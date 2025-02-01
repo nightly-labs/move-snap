@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
-  "description": "Manage Aptos-based tokens and NFTs, connect Aptos apps with MetaMask",
-  "proposedName": "Aptos Wallet",
+  "description": "Manage Move-based tokens and NFTs, connect Move apps with MetaMask",
+  "proposedName": "Move Wallet",
   "repository": {
     "type": "git",
     "url": "https://github.com/nightly-labs/aptos-snap"
@@ -12,7 +12,7 @@
       "npm": {
         "filePath": "dist/bundle.js",
         "iconPath": "images/logo.svg",
-        "packageName": "@nightlylabs/metamask-aptos-snap",
+        "packageName": "@nightlylabs/metamask-move-snap",
         "registry": "https://registry.npmjs.org/"
       }
     }

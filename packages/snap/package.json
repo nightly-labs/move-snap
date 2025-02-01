@@ -1,7 +1,7 @@
 {
-  "name": "@nightlylabs/metamask-aptos-snap",
+  "name": "@nightlylabs/metamask-move-snap",
   "version": "0.1.0",
-  "description": "Manage Aptos-based tokens and NFTs, connect Aptos apps with MetaMask",
+  "description": "Manage Move-based tokens and NFTs, connect Move apps with MetaMask",
   "repository": {
     "type": "git",
     "url": "https://github.com/nightly-labs/aptos-snap"
