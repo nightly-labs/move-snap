@@ -28,7 +28,7 @@
   "dependencies": {
     "@aptos-labs/ts-sdk": "1.29.1",
     "@aptos-labs/wallet-standard": "0.2.0",
-    "@metamask/providers": "^16.0.0",
+    "@metamask/providers": "^19.0.0",
     "buffer": "^6.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
