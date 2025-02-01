@@ -4,7 +4,7 @@
   "proposedName": "Move Wallet",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nightly-labs/aptos-snap"
+    "url": "https://github.com/nightly-labs/move-snap"
   },
   "source": {
     "shasum": "h5QtWX8j16rUR0GipJIChsgzveB3UD03Fv5cwIYyVLI=",
