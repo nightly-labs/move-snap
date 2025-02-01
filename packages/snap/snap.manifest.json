@@ -7,7 +7,7 @@
     "url": "https://github.com/nightly-labs/aptos-snap"
   },
   "source": {
-    "shasum": "jUKRyv4RAGl5R57QqFjzgnMBMWzZ2jrhSKrlN//DpUE=",
+    "shasum": "h5QtWX8j16rUR0GipJIChsgzveB3UD03Fv5cwIYyVLI=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

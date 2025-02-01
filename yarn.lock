@@ -3370,9 +3370,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nightlylabs/metamask-aptos-snap@workspace:packages/snap":
+"@nightlylabs/metamask-move-snap@workspace:packages/snap":
   version: 0.0.0-use.local
-  resolution: "@nightlylabs/metamask-aptos-snap@workspace:packages/snap"
+  resolution: "@nightlylabs/metamask-move-snap@workspace:packages/snap"
   dependencies:
     "@aptos-labs/ts-sdk": 1.29.1
     "@aptos-labs/wallet-standard": 0.2.0
