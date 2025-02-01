@@ -1,18 +1,18 @@
 import {
   AccountAddress,
-  AnyRawTransaction,
+  type AnyRawTransaction,
   Deserializer,
   RawTransaction,
   Serializer,
 } from '@aptos-labs/ts-sdk';
-export interface IAnyRawTransactionStringified {
+export type AnyRawTransactionStringified = {
   rawTransaction: string;
   secondarySignerAddresses?: undefined | string[];
   feePayerAddress?: string;
-}
+};
 export const encodeAptosTransaction = (
   aptosTx: AnyRawTransaction,
-): IAnyRawTransactionStringified => {
+): AnyRawTransactionStringified => {
   const buffer = new Serializer();
   aptosTx.rawTransaction.serialize(buffer);
   return {
@@ -24,7 +24,7 @@ export const encodeAptosTransaction = (
   };
 };
 export const decodeAptosTransaction = (
-  encodedTx: IAnyRawTransactionStringified,
+  encodedTx: AnyRawTransactionStringified,
 ): AnyRawTransaction => {
   const decodedAnyRawTransaction = {
     rawTransaction: RawTransaction.deserialize(

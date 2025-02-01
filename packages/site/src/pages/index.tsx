@@ -137,7 +137,6 @@ const Index = () => {
       address: string;
     };
     setAccount({ ...response });
-    console.log({ response });
   };
   const handleChangeNetworkClick = async () => {
     const response = await invokeSnap({
@@ -148,13 +147,11 @@ const Index = () => {
         name: Network.TESTNET,
       } as NetworkInfo,
     });
-    console.log({ response });
   };
   const handleGetNetwork = async () => {
     const response = await invokeSnap({
       method: 'getNetwork',
     });
-    console.log({ response });
   };
   const handleSignAndSubmitTransaction = async () => {
     try {
@@ -188,7 +185,6 @@ const Index = () => {
         transaction: transaction,
         senderAuthenticator: signature,
       });
-      console.log({ tx });
     } catch (error) {
       console.log(error);
     }
@@ -206,7 +202,6 @@ const Index = () => {
           ...toSign,
         },
       });
-      console.log({ response });
     } catch (error) {
       console.log(error);
     }
