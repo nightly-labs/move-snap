@@ -1,6 +1,6 @@
 {
   "name": "@nightlylabs/metamask-move-snap",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Move-based tokens and NFTs, connect Move apps with MetaMask",
   "repository": {
     "type": "git",
@@ -10,7 +10,8 @@
   "main": "./dist/bundle.js",
   "files": [
     "dist/",
-    "snap.manifest.json"
+    "snap.manifest.json",
+    "images/"
   ],
   "scripts": {
     "allow-scripts": "yarn workspace root allow-scripts",
