@@ -209,7 +209,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       });
       if (result === true) {
         const signature = account.sign(signMessageParams.message);
-        return signature.bcsToHex().toString();
+        return signature.toString();
       } else {
         throw new Error('User rejected the request.');
       }
