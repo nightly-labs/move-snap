@@ -3,7 +3,7 @@ import {
   NetworkInfo,
 } from '@aptos-labs/wallet-standard';
 import type { OnRpcRequestHandler } from '@metamask/snaps-sdk';
-import { Bold, Box, Text } from '@metamask/snaps-sdk/jsx';
+import { Bold, Box, Copyable, Text } from '@metamask/snaps-sdk/jsx';
 import { getAccount } from './account';
 import { decodeAptosTransaction } from './aptos';
 
@@ -170,6 +170,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
                 using <Bold>{account.accountAddress.toString()}</Bold> account
               </Text>
               {payloadToUserContent(module)}
+              <Copyable value={JSON.stringify(module)} />
               <Text>Confirm to sign this transaction.</Text>
             </Box>
           ),
