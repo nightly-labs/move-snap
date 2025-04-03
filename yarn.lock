@@ -3461,6 +3461,7 @@ __metadata:
     "@metamask/snaps-sdk": ^6.1.1
     "@typescript-eslint/eslint-plugin": ^5.42.1
     "@typescript-eslint/parser": ^5.42.1
+    bignumber.js: ^9.1.2
     buffer: ^6.0.3
     eslint: ^8.45.0
     eslint-config-prettier: ^8.5.0

@@ -39,3 +39,20 @@ export const decodeAptosTransaction = (
   };
   return decodedAnyRawTransaction as AnyRawTransaction;
 };
+
+// const client = new Aptos();
+
+// export const fetchCoinDetails = async (coinAddress: string) => {
+//   try {
+//     const resource = await client.getFungibleAssetMetadataByAssetType({
+//       assetType: coinAddress,
+//     });
+//     console.log(resource);
+
+//     // Example for AptosCoin or USDC
+//     const { symbol: ticker, decimals } = resource; // If present in the resource
+//     return { ticker, decimals };
+//   } catch (error) {
+//     return error;
+//   }
+// };

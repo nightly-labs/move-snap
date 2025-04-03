@@ -1,10 +1,10 @@
+import { type TransactionPayload } from '@aptos-labs/ts-sdk';
 import { type Json, ManageStateOperation } from '@metamask/snaps-sdk';
 import {
   DEFAULT_SNAP_STATE,
   type SnapState,
   type TxPayloadType,
 } from './types';
-import { type TransactionPayload } from '@aptos-labs/ts-sdk';
 /**
  * Get the snap state.
  * @returns The snap state.
@@ -76,4 +76,29 @@ export const payloadToType = (payload: TransactionPayload): TxPayloadType => {
     return 'multiSig';
   }
   throw new Error('Invalid payload');
+};
+
+export const reverseLittleEndian = (endianString: string): string => {
+  return endianString.split(',').reverse().join(',');
+};
+
+export const littleEndianBytesToInt = (bytes: string[]): number => {
+  return bytes.reduce(
+    (acc, byte, index) => acc + Number(byte) * 256 ** index,
+    0,
+  );
+};
+
+export const chainIdToNetworkTicker = (chainId: number) => {
+  switch (chainId) {
+    case 1:
+    case 2:
+    case 173:
+      return 'APT';
+    case 126:
+    case 250:
+      return 'MOVE';
+    default:
+      return 'APT';
+  }
 };

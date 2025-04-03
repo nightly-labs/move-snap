@@ -1,5 +1,5 @@
 {
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Manage Move-based tokens and NFTs, connect Move apps with MetaMask",
   "proposedName": "Move Wallet",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/nightly-labs/move-snap"
   },
   "source": {
-    "shasum": "1my4Ls+p8cr8b1TllBjwwSzJCWgHMDob7pazf9crx7Y=",
+    "shasum": "kkjhSG7crezqT0vr8VTewD6HjY1WAbdHqQzFJbHwMl0=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

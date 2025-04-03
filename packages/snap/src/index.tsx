@@ -1,30 +1,45 @@
-import {
+import type {
+  RawTransaction,
+  TransactionPayload,
+  TransactionPayloadEntryFunction,
+  TransactionPayloadMultiSig,
+  TransactionPayloadScript,
+  // TransactionPayloadMultiSig,
+  // TransactionPayloadScript,
+} from '@aptos-labs/ts-sdk';
+import type {
   AptosSignMessageInput,
   NetworkInfo,
 } from '@aptos-labs/wallet-standard';
 import type { OnRpcRequestHandler } from '@metamask/snaps-sdk';
-import { Bold, Box, Copyable, Text } from '@metamask/snaps-sdk/jsx';
-import { getAccount } from './account';
-import { decodeAptosTransaction } from './aptos';
-
 import {
+  Address,
+  Bold,
+  Box,
+  Copyable,
+  Row,
+  Text,
+} from '@metamask/snaps-sdk/jsx';
+import BigNumber from 'bignumber.js';
+
+import { getAccount } from './account';
+import { decodeAptosTransaction, fetchCoinDetails } from './aptos';
+import type { TxPayload } from './types';
+import {
+  chainIdToNetworkTicker,
   getState,
+  littleEndianBytesToInt,
   payloadToType,
   sanitizeString,
   updateState,
   validateUrl,
 } from './utils';
-import {
-  TransactionPayload,
-  TransactionPayloadEntryFunction,
-  TransactionPayloadMultiSig,
-  TransactionPayloadScript,
-} from '@aptos-labs/ts-sdk';
-import { TxPayload } from './types';
-export const payloadToUserContent = (payload: TransactionPayload) => {
+
+export const payloadToUserContent = (tx: RawTransaction) => {
+  const { payload } = tx;
   const payloadType = payloadToType(payload);
   switch (payloadType) {
-    case 'script':
+    case 'script': {
       const script = payload as TransactionPayloadScript;
       // Hard to show details
       return (
@@ -32,34 +47,128 @@ export const payloadToUserContent = (payload: TransactionPayload) => {
           Transaction type: <Bold>Script</Bold>
         </Text>
       );
-    case 'entryFunction':
+    }
+    case 'entryFunction': {
       const entryFunction = payload as TransactionPayloadEntryFunction;
       return (
         <Box>
-          <Text>
-            Transaction type: <Bold>Entry Function</Bold>
-          </Text>
-          <Text>
-            Function name:{' '}
-            <Bold>{entryFunction.entryFunction.function_name.identifier}</Bold>
-          </Text>
-          <Text>
-            Module:{' '}
-            <Bold>
-              {entryFunction.entryFunction.module_name.address.toString()}::
-              {entryFunction.entryFunction.module_name.name.identifier}
-            </Bold>
-          </Text>
+          <Row label="Transaction type">
+            <Text>
+              <Bold>Entry Function</Bold>
+            </Text>
+          </Row>
+          <Row label="Function name">
+            <Text>
+              <Bold>
+                {entryFunction.entryFunction.function_name.identifier}
+              </Bold>
+            </Text>
+          </Row>
+          <Row label="Module">
+            <Text>
+              <Bold>
+                {entryFunction.entryFunction.module_name.address.toString()}::
+                {entryFunction.entryFunction.module_name.name.identifier}
+              </Bold>
+            </Text>
+          </Row>
+          <Row label="Recipient">
+            <Address
+              address={`aptos:1:${
+                entryFunction.entryFunction.args[0]?.bcsToHex().toString() ?? ''
+              }`}
+            />
+          </Row>
+          <Row label="Amount">
+            <Text>
+              {BigNumber(
+                littleEndianBytesToInt(
+                  (
+                    entryFunction.entryFunction.args[1]
+                      ?.bcsToBytes()
+                      .toString() ?? ''
+                  ).split(','),
+                ).toString(),
+              )
+                .shiftedBy(-8)
+                .toString()}{' '}
+              {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
+            </Text>
+          </Row>
+          <Row label="Max gas amount">
+            <Text>
+              {BigNumber(tx.max_gas_amount.toString()).shiftedBy(-8).toString()}{' '}
+              {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
+            </Text>
+          </Row>
         </Box>
       );
-    case 'multiSig':
+    }
+    case 'multiSig': {
       const multiSig = payload as TransactionPayloadMultiSig;
       // Hard to show details
       return (
-        <Text>
-          Transaction type: <Bold>Multi signature</Bold>
-        </Text>
+        <Box>
+          <Row label="Transaction type">
+            <Text>
+              <Bold>Multi signature</Bold>
+            </Text>
+          </Row>
+          {/* <Row label="Function name">
+            <Text>
+              <Bold>
+                {multiSig.multiSig.transaction_payload?.transaction_payload
+                  .function_name.identifier ?? ''}
+              </Bold>
+            </Text>
+          </Row>
+          <Row label="Module">
+            <Text>
+              <Bold>
+                {multiSig.multiSig.transaction_payload?.transaction_payload.module_name.address.toString() ??
+                  ''}
+                ::
+                {multiSig.multiSig.transaction_payload?.transaction_payload
+                  .module_name.name.identifier ?? ''}
+              </Bold>
+            </Text>
+          </Row>
+          <Row label="Recipient">
+            <Address
+              address={`aptos:1:${
+                multiSig.multiSig.transaction_payload?.transaction_payload.args[0]
+                  ?.bcsToHex()
+                  .toString() ?? ''
+              }`}
+            />
+          </Row>
+          <Row label="Amount">
+            <Text>
+              {BigNumber(
+                littleEndianBytesToInt(
+                  (
+                    multiSig.multiSig.transaction_payload?.transaction_payload.args[1]
+                      ?.bcsToBytes()
+                      .toString() ?? ''
+                  ).split(','),
+                ).toString(),
+              )
+                .shiftedBy(-8)
+                .toString()}{' '}
+              {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
+            </Text>
+          </Row>
+          <Row label="Max gas amount">
+            <Text>
+              {BigNumber(tx.max_gas_amount.toString()).shiftedBy(-8).toString()}{' '}
+              {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
+            </Text>
+          </Row> */}
+        </Box>
       );
+    }
+    default:
+      return null;
   }
 };
 
@@ -104,9 +213,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           publicKey: account.publicKey.toString(),
           address: account.accountAddress.toString(),
         };
-      } else {
-        throw new Error('User rejected the request.');
       }
+      throw new Error('User rejected the request.');
     }
     case 'getNetwork': {
       return state.network as any;
@@ -145,15 +253,15 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         // Update the state
         await updateState({ ...state, network: newNetworkInfo });
         return null;
-      } else {
-        throw new Error('User rejected the request.');
       }
+      throw new Error('User rejected the request.');
     }
     case 'signAndSubmitTransaction': {
       const account = await getAccount();
       const signAndSubmitTransactionInput = decodeAptosTransaction(
         (request.params as any).payload,
       );
+
       // We can try to show
       const module = signAndSubmitTransactionInput.rawTransaction
         .payload as TxPayload;
@@ -169,7 +277,9 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
               <Text>
                 using <Bold>{account.accountAddress.toString()}</Bold> account
               </Text>
-              {payloadToUserContent(module)}
+              {payloadToUserContent(
+                signAndSubmitTransactionInput.rawTransaction,
+              )}
               <Copyable value={JSON.stringify(module)} />
               <Text>Confirm to sign this transaction.</Text>
             </Box>
@@ -181,9 +291,9 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           signAndSubmitTransactionInput,
         );
         return signature.bcsToHex().toString();
-      } else {
-        throw new Error('User rejected the request.');
       }
+
+      throw new Error('User rejected the request.');
     }
     case 'signMessage': {
       const signMessageParams = request.params as AptosSignMessageInput;
@@ -211,9 +321,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       if (result === true) {
         const signature = account.sign(signMessageParams.message);
         return signature.toString();
-      } else {
-        throw new Error('User rejected the request.');
       }
+      throw new Error('User rejected the request.');
     }
     default:
       throw new Error('Method not found.');
