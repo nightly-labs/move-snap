@@ -23,12 +23,14 @@ import {
 import BigNumber from 'bignumber.js';
 
 import { getAccount } from './account';
-import { decodeAptosTransaction, fetchCoinDetails } from './aptos';
+import { decodeAptosTransaction } from './aptos';
 import type { TxPayload } from './types';
 import {
   chainIdToNetworkTicker,
   getState,
+  isTransferCoinsPayload,
   littleEndianBytesToInt,
+  parseAmountFromBcsArg,
   payloadToType,
   sanitizeString,
   updateState,
@@ -72,29 +74,29 @@ export const payloadToUserContent = (tx: RawTransaction) => {
               </Bold>
             </Text>
           </Row>
-          <Row label="Recipient">
-            <Address
-              address={`aptos:1:${
-                entryFunction.entryFunction.args[0]?.bcsToHex().toString() ?? ''
-              }`}
-            />
-          </Row>
-          <Row label="Amount">
-            <Text>
-              {BigNumber(
-                littleEndianBytesToInt(
-                  (
-                    entryFunction.entryFunction.args[1]
-                      ?.bcsToBytes()
+
+          {isTransferCoinsPayload(
+            entryFunction.entryFunction.function_name.identifier,
+          ) ? (
+            <Box>
+              <Row label="Recipient">
+                <Address
+                  address={`aptos:1:${
+                    entryFunction.entryFunction.args[0]
+                      ?.bcsToHex()
                       .toString() ?? ''
-                  ).split(','),
-                ).toString(),
-              )
-                .shiftedBy(-8)
-                .toString()}{' '}
-              {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
-            </Text>
-          </Row>
+                  }`}
+                />
+              </Row>
+              <Row label="Amount">
+                <Text>
+                  {parseAmountFromBcsArg(entryFunction.entryFunction.args[1])}{' '}
+                  {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
+                </Text>
+              </Row>
+            </Box>
+          ) : null}
+
           <Row label="Max gas amount">
             <Text>
               {BigNumber(tx.max_gas_amount.toString()).shiftedBy(-8).toString()}{' '}
@@ -114,11 +116,11 @@ export const payloadToUserContent = (tx: RawTransaction) => {
               <Bold>Multi signature</Bold>
             </Text>
           </Row>
-          {/* <Row label="Function name">
+          <Row label="Function name">
             <Text>
               <Bold>
                 {multiSig.multiSig.transaction_payload?.transaction_payload
-                  .function_name.identifier ?? ''}
+                  ?.function_name.identifier ?? ''}
               </Bold>
             </Text>
           </Row>
@@ -133,37 +135,47 @@ export const payloadToUserContent = (tx: RawTransaction) => {
               </Bold>
             </Text>
           </Row>
-          <Row label="Recipient">
-            <Address
-              address={`aptos:1:${
-                multiSig.multiSig.transaction_payload?.transaction_payload.args[0]
-                  ?.bcsToHex()
-                  .toString() ?? ''
-              }`}
-            />
-          </Row>
-          <Row label="Amount">
-            <Text>
-              {BigNumber(
-                littleEndianBytesToInt(
-                  (
-                    multiSig.multiSig.transaction_payload?.transaction_payload.args[1]
-                      ?.bcsToBytes()
+
+          {isTransferCoinsPayload(
+            multiSig.multiSig.transaction_payload?.transaction_payload
+              .function_name.identifier ?? '',
+          ) ? (
+            <Box>
+              {/* <Row label="Multisig address">
+                <Address
+                  address={`aptos:1:${
+                    multiSig.multiSig.multisig_address?.toString() ?? ''
+                  }`}
+                />
+              </Row> */}
+              <Row label="Recipient">
+                <Address
+                  address={`aptos:1:${
+                    multiSig.multiSig.transaction_payload?.transaction_payload.args[0]
+                      ?.bcsToHex()
                       .toString() ?? ''
-                  ).split(','),
-                ).toString(),
-              )
-                .shiftedBy(-8)
-                .toString()}{' '}
-              {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
-            </Text>
-          </Row>
+                  }`}
+                />
+              </Row>
+
+              <Row label="Amount">
+                <Text>
+                  {parseAmountFromBcsArg(
+                    multiSig.multiSig.transaction_payload?.transaction_payload
+                      .args[1],
+                  )}{' '}
+                  {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
+                </Text>
+              </Row>
+            </Box>
+          ) : null}
+
           <Row label="Max gas amount">
             <Text>
               {BigNumber(tx.max_gas_amount.toString()).shiftedBy(-8).toString()}{' '}
               {chainIdToNetworkTicker(Number(tx.chain_id.chainId))}
             </Text>
-          </Row> */}
+          </Row>
         </Box>
       );
     }
@@ -198,7 +210,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
           content: (
             <Box>
               <Text>
-                <Bold>{origin}</Bold>! want to connect to your account
+                <Bold>{origin}</Bold>! wants to connect to your account
               </Text>
               <Text>
                 <Bold>{account.accountAddress.toString()}</Bold>

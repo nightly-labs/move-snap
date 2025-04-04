@@ -1,6 +1,6 @@
 {
   "name": "@nightlylabs/metamask-move-snap",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Manage Move-based tokens and NFTs, connect Move apps with MetaMask",
   "repository": {
     "type": "git",

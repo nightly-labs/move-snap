@@ -5,6 +5,7 @@ import {
   type SnapState,
   type TxPayloadType,
 } from './types';
+import BigNumber from 'bignumber.js';
 /**
  * Get the snap state.
  * @returns The snap state.
@@ -101,4 +102,20 @@ export const chainIdToNetworkTicker = (chainId: number) => {
     default:
       return 'APT';
   }
+};
+
+export const parseAmountFromBcsArg = (bcsArg: any): string => {
+  const byteStr = bcsArg?.bcsToBytes().toString() ?? '';
+  const amount = BigNumber(
+    littleEndianBytesToInt(byteStr.split(',')).toString(),
+  ).shiftedBy(-8);
+  return amount.toString();
+};
+
+export const isTransferCoinsPayload = (identifier: string) => {
+  return (
+    identifier === 'transfer' ||
+    identifier === 'transfer_coins' ||
+    identifier === 'supply'
+  );
 };
